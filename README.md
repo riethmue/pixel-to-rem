@@ -6,7 +6,7 @@
 
 This vscode extension displays inline conversions in css and css for px, rem and em.
 
-![example](assets/example.gif)
+![example](https://github.com/riethmue/pixel-to-rem/blob/main/assets/example.gif)
 
 ## Upcoming Features
 
