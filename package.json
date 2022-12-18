@@ -4,6 +4,7 @@
   "description": "This Visual Studio Code extension allows developers to quickly and easily convert pixel values to rem values and tailwindcss class names. Simply highlight a pixel value in your code, and the extension will display the corresponding rem value and tailwindcss class name inline, saving you time and effort when working with responsive designs.",
   "version": "0.0.1",
   "icon": "assets/px2rem.png",
+  "publisher": "riethmue",
   "engines": {
     "vscode": "^1.74.0"
   },
