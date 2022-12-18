@@ -14,8 +14,10 @@
   "activationEvents": [
     "onLanguage:css",
     "onLanguage:scss",
+    "onLanguage:html",
     "onSave:css",
-    "onSave:scss"
+    "onSave:scss",
+    "onSave:html"
   ],
   "main": "./dist/extension.js",
   "contributes": {
