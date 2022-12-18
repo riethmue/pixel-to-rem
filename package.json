@@ -10,16 +10,14 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:pixel-to-rem.helloWorld"
+    "onLanguage:css",
+    "onLanguage:scss",
+    "onSave:css",
+    "onSave:scss"
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "pixel-to-rem.helloWorld",
-        "title": "Hello World"
-      }
-    ]
+    "commands": []
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

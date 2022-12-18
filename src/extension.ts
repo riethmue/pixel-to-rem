@@ -1,26 +1,83 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  // Create a decorator type that we will use to decorate the text
+  const decoratorType = vscode.window.createTextEditorDecorationType({
+    after: {
+      margin: "0 0 0 2ch",
+      color: "#575757",
+      backgroundColor: "#3033337f",
+      contentText: "$1",
+      fontStyle: "italic",
+    },
+  });
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "pixel-to-rem" is now active!');
+  // Get the active text editor
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    return;
+  }
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('pixel-to-rem.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from pixel-to-rem!');
-	});
+  // Get the document text
+  const text = editor.document.getText();
 
-	context.subscriptions.push(disposable);
+  // Use a regular expression to find all instances of `rem` and `em` units in the text
+  const remRegex = /(\d*\.?\d+)rem/g;
+  const emRegex = /(\d*\.?\d+)em/g;
+  const pxRegex = /(\d*\.?\d+)px/g;
+
+  // Create an array of decorations that we will apply to the text editor
+  const decorations: vscode.DecorationOptions[] = [];
+
+  // Find all instances of `rem` units in the text and calculate the equivalent pixel value
+  let match;
+  while ((match = remRegex.exec(text))) {
+    const start = editor.document.positionAt(match.index);
+    const end = editor.document.positionAt(match.index + match[0].length);
+    const pixels = parseFloat(match[1]) * 16;
+    decorations.push({
+      range: new vscode.Range(start, end),
+      renderOptions: {
+        after: {
+          contentText: `(${pixels}px)`,
+        },
+      },
+    });
+  }
+
+  // Find all instances of `em` units in the text and calculate the equivalent pixel value
+  while ((match = emRegex.exec(text))) {
+    const start = editor.document.positionAt(match.index);
+    const end = editor.document.positionAt(match.index + match[0].length);
+    const pixels = parseFloat(match[1]) / 16;
+    decorations.push({
+      range: new vscode.Range(start, end),
+      renderOptions: {
+        after: {
+          contentText: `(${pixels}px)`,
+        },
+      },
+    });
+  }
+
+  // Find all instances of `px` units in the text and calculate the equivalent pixel value
+  while ((match = pxRegex.exec(text))) {
+    const start = editor.document.positionAt(match.index);
+    const end = editor.document.positionAt(match.index + match[0].length);
+    const rem = parseFloat(match[1]) * 16;
+    const em = parseFloat(match[1]) * 16;
+    decorations.push({
+      range: new vscode.Range(start, end),
+      renderOptions: {
+        after: {
+          contentText: `(${rem}rem)`,
+        },
+      },
+    });
+  }
+
+  // Apply the decorations to the text editor
+  editor.setDecorations(decoratorType, decorations);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
