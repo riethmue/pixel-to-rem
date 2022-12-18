@@ -2,7 +2,7 @@
   "name": "pixel-to-rem",
   "displayName": "Pixel to Rem",
   "description": "Display pixel values to rem values and vice versa.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "icon": "assets/px2rem.png",
   "publisher": "riethmue",
   "engines": {
