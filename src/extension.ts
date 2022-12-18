@@ -1,8 +1,26 @@
 import * as vscode from "vscode";
-
+let decorators: vscode.TextEditorDecorationType[] = [];
 export function activate(context: vscode.ExtensionContext) {
+  // Clean up any existing decorators
+  decorators.forEach((decorator) => decorator.dispose());
+  decorators = [];
+
+  let disposable = vscode.workspace.onDidSaveTextDocument((textDocument) => {
+    if (
+      textDocument.languageId === "css" ||
+      textDocument.languageId === "scss"
+    ) {
+      // Call your extension's activate function here
+      console.log("CSS or SCSS file saved, activating extension again");
+      activate(context);
+    }
+  });
+
+  // Dispose the event listener when your extension is deactivated
+  context.subscriptions.push(disposable);
+
   // Create a decorator type that we will use to decorate the text
-  const decoratorType = vscode.window.createTextEditorDecorationType({
+  const decorator = vscode.window.createTextEditorDecorationType({
     after: {
       margin: "0 0 0 2ch",
       color: "#575757",
@@ -76,8 +94,10 @@ export function activate(context: vscode.ExtensionContext) {
     });
   }
 
+  // Save decorator for cleanup
+  decorators.push(decorator);
   // Apply the decorations to the text editor
-  editor.setDecorations(decoratorType, decorations);
+  editor.setDecorations(decorator, decorations);
 }
 
 export function deactivate() {}
