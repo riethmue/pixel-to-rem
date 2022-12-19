@@ -2,7 +2,7 @@
   "name": "pixel-to-rem",
   "displayName": "Pixel to Rem TailwindCSS",
   "description": "CSS, SCSS, TailwindCSS support! Display pixel values to rem values and vice versa.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "icon": "assets/px2rem.png",
   "repository": {
     "type": "git",
