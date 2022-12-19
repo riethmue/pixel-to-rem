@@ -96,17 +96,19 @@ export function activate(context: vscode.ExtensionContext) {
     }
   } else if (editor.document.languageId === "html") {
     let match;
-    const tailwindRegex = /\b[a-zA-Z]*-[a-zA-Z]*-\d+\b/;
+    const tailwindRegex = /(m|mt|ml|mr|mb|p|pl|pr|pb|pl|pt|px|px|py)-\d+/g;
     // Find all instances of `px` units in the text and calculate the equivalent pixel value
     while ((match = tailwindRegex.exec(text))) {
       const start = editor.document.positionAt(match.index);
       const end = editor.document.positionAt(match.index + match[0].length);
-      const pixels = parseFloat(match[1]) / 16;
+      const num = match[0].split("-")[1];
+      const rem = num * 0.25;
+      const pixels = rem * 16;
       decorations.push({
         range: new vscode.Range(start, end),
         renderOptions: {
           after: {
-            contentText: `(${pixels}px)`,
+            contentText: `(${rem}rem ${pixels}px)`,
           },
         },
       });

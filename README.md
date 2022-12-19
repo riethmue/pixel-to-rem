@@ -4,14 +4,10 @@
 
 ## Features
 
-This vscode extension displays inline conversions in css and css for px, rem and em.
+This vscode extension displays inline conversions in css and css for px, rem and em in CSS/SCSS.
 
 ![example](https://media.giphy.com/media/9KktOG9Y8UpU5a1U46/giphy.gif)
 
-## Upcoming Features
+It supports TailwindCSS class names (e.g. mr-5, scroll-pt-0.5) in your HTML templates, making it easier to style your templates using the popular utility-first CSS framework.
 
-- **TailwindCSS support for HTML templates**: Support for TailwindCSS class names (e.g. mr-5, scroll-pt-0.5) in your HTML templates, making it easier to style your templates using the popular utility-first CSS framework.
-
-- **Supporting Dark and light mode**
-
-I'm actively working on these features and plan to release them in a future update. Stay tuned for more updates!
+![example](https://media.giphy.com/media/7hxvQIIZQbSVDPYUqQ/giphy.gif)
