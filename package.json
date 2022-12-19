@@ -4,6 +4,10 @@
   "description": "CSS, SCSS, TailwindCSS support! Display pixel values to rem values and vice versa.",
   "version": "0.0.2",
   "icon": "assets/px2rem.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/riethmue/pixel-to-rem.git"
+  },
   "publisher": "riethmue",
   "engines": {
     "vscode": "^1.74.0"
@@ -14,8 +18,10 @@
   "activationEvents": [
     "onLanguage:css",
     "onLanguage:scss",
+    "onLanguage:html",
     "onSave:css",
-    "onSave:scss"
+    "onSave:scss",
+    "onSave:html"
   ],
   "main": "./dist/extension.js",
   "contributes": {
