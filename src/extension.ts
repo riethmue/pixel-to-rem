@@ -5,19 +5,6 @@ export function activate(context: vscode.ExtensionContext) {
   decorators.forEach((decorator) => decorator.dispose());
   decorators = [];
 
-  let disposable = vscode.workspace.onDidSaveTextDocument((textDocument) => {
-    if (
-      textDocument.languageId === "css" ||
-      textDocument.languageId === "scss" ||
-      textDocument.languageId === "html"
-    ) {
-      activate(context);
-    }
-  });
-
-  // Dispose the event listener when your extension is deactivated
-  context.subscriptions.push(disposable);
-
   // Create a decorator type that we will use to decorate the text
   const decorator = vscode.window.createTextEditorDecorationType({
     after: {
@@ -41,84 +28,34 @@ export function activate(context: vscode.ExtensionContext) {
   // Create an array of decorations that we will apply to the text editor
   const decorations: vscode.DecorationOptions[] = [];
 
-  if (
-    editor.document.languageId === "css" ||
-    editor.document.languageId === "scss"
-  ) {
-    const remRegex = /(\d*\.?\d+)rem/g;
-    const emRegex = /(\d*\.?\d+)em/g;
-    const pxRegex = /(\d*\.?\d+)px/g;
-    // Find all instances of `rem` units in the text and calculate the equivalent pixel value
-    let match;
-    while ((match = remRegex.exec(text))) {
-      const start = editor.document.positionAt(match.index);
-      const end = editor.document.positionAt(match.index + match[0].length);
-      const pixels = parseFloat(match[1]) * 16;
-      decorations.push({
-        range: new vscode.Range(start, end),
-        renderOptions: {
-          after: {
-            contentText: `(${pixels}px)`,
-          },
-        },
-      });
+  // Use a single regular expression with character classes to match all three CSS unit types
+  const unitRegex = /(?>([\d.]+)(rem|em|px))++/g;
+  let match;
+  while ((match = unitRegex.exec(text))) {
+    const start = editor.document.positionAt(match.index);
+    const end = editor.document.positionAt(match.index + match[0].length);
+    const value = parseFloat(match[1]);
+    let pixels;
+    if (match[2] === "rem") {
+      pixels = value * 16;
+    } else if (match[2] === "em") {
+      pixels = value * 16;
+    } else {
+      pixels = value;
     }
-
-    // Find all instances of `em` units in the text and calculate the equivalent pixel value
-    while ((match = emRegex.exec(text))) {
-      const start = editor.document.positionAt(match.index);
-      const end = editor.document.positionAt(match.index + match[0].length);
-      const pixels = parseFloat(match[1]) / 16;
-      decorations.push({
-        range: new vscode.Range(start, end),
-        renderOptions: {
-          after: {
-            contentText: `(${pixels}px)`,
-          },
+    decorations.push({
+      range: new vscode.Range(start, end),
+      renderOptions: {
+        after: {
+          contentText: `(${pixels}px)`,
         },
-      });
-    }
-
-    // Find all instances of `px` units in the text and calculate the equivalent pixel value
-    while ((match = pxRegex.exec(text))) {
-      const start = editor.document.positionAt(match.index);
-      const end = editor.document.positionAt(match.index + match[0].length);
-      const rem = parseFloat(match[1]) * 16;
-      const em = parseFloat(match[1]) * 16;
-      decorations.push({
-        range: new vscode.Range(start, end),
-        renderOptions: {
-          after: {
-            contentText: `(${rem}rem)`,
-          },
-        },
-      });
-    }
-  } else if (editor.document.languageId === "html") {
-    let match;
-    const tailwindRegex = /(m|mt|ml|mr|mb|p|pl|pr|pb|pl|pt|px|px|py)-\d+/g;
-    // Find all instances of `px` units in the text and calculate the equivalent pixel value
-    while ((match = tailwindRegex.exec(text))) {
-      const start = editor.document.positionAt(match.index);
-      const end = editor.document.positionAt(match.index + match[0].length);
-      const num = match[0].split("-")[1];
-      const rem = num * 0.25;
-      const pixels = rem * 16;
-      decorations.push({
-        range: new vscode.Range(start, end),
-        renderOptions: {
-          after: {
-            contentText: `(${rem}rem ${pixels}px)`,
-          },
-        },
-      });
-    }
+      },
+    });
   }
 
-  // Save decorator for cleanup
-  decorators.push(decorator);
   // Apply the decorations to the text editor
   editor.setDecorations(decorator, decorations);
-}
 
-export function deactivate() {}
+  // Add the decorator to the list of decorators that need to be disposed when the extension is deactivated
+  decorators.push(decorator);
+}
