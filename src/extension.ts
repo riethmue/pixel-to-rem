@@ -53,51 +53,35 @@ export async function activate(context: vscode.ExtensionContext) {
     editor.document.languageId === "css" ||
     editor.document.languageId === "scss"
   ) {
-    const remRegex = /(\d*\.?\d+)rem/g;
-    const emRegex = /(\d*\.?\d+)em/g;
-    const pxRegex = /(\d*\.?\d+)px/g;
-    // Find all instances of `rem` units in the text and calculate the equivalent pixel value
+    // Combine the regexes into a single regex
+    const unitsRegex = /(\d*\.?\d+)rem|(\d*\.?\d+)em|(\d*\.?\d+)px/g;
+
+    // Find all instances of units in the text
     let match;
-    while ((match = remRegex.exec(text))) {
-      const start = editor.document.positionAt(match.index);
-      const end = editor.document.positionAt(match.index + match[0].length);
-      const pixels = parseFloat(match[1]) * 16;
-      decorations.push({
-        range: new vscode.Range(start, end),
-        renderOptions: {
-          after: {
-            contentText: `(${pixels}px)`,
-          },
-        },
-      });
-    }
+    while ((match = unitsRegex.exec(text))) {
+      // Extract the value and unit of the matched string
+      const value = match[1] || match[2] || match[3];
+      const unit = match[1] ? "rem" : match[2] ? "em" : "px";
 
-    // Find all instances of `em` units in the text and calculate the equivalent pixel value
-    while ((match = emRegex.exec(text))) {
-      const start = editor.document.positionAt(match.index);
-      const end = editor.document.positionAt(match.index + match[0].length);
-      const pixels = parseFloat(match[1]) / 16;
-      decorations.push({
-        range: new vscode.Range(start, end),
-        renderOptions: {
-          after: {
-            contentText: `(${pixels}px)`,
-          },
-        },
-      });
-    }
+      // Calculate the equivalent pixel value
+      let converted;
+      let result = "";
+      if (unit === "rem" || unit === "em") {
+        converted = Math.round(parseFloat(value) * 16 * 100) / 100;
+        result = `(${converted}px)`;
+      } else if (unit === "px") {
+        converted = Math.round((parseFloat(value) / 16) * 100) / 100;
+        result = `(${converted}rem)`;
+      }
 
-    // Find all instances of `px` units in the text and calculate the equivalent pixel value
-    while ((match = pxRegex.exec(text))) {
+      // Add a decoration for the matched string
       const start = editor.document.positionAt(match.index);
       const end = editor.document.positionAt(match.index + match[0].length);
-      const rem = parseFloat(match[1]) * 16;
-      const em = parseFloat(match[1]) * 16;
       decorations.push({
         range: new vscode.Range(start, end),
         renderOptions: {
           after: {
-            contentText: `(${rem}rem)`,
+            contentText: result,
           },
         },
       });
